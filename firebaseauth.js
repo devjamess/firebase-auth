@@ -2,7 +2,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebas
 import { 
     getAuth,
     createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword 
+    signInWithEmailAndPassword,
+    GoogleAuthProvider, 
+    signInWithPopup,
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
@@ -63,6 +65,35 @@ signUp.addEventListener("click", (ev) => {
                 showMessage("Endereço de email já existe", "signUpMessage");
             } else {
                 showMessage("Não é possível criar usuário", "signUpMessage");
+            }
+        });
+});
+
+
+
+const signInGoogle = document.getElementById("submitSignInGoogle");
+signInGoogle.addEventListener("click", event => {
+    event.preventDefault();
+
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+
+
+    signInWithPopup(auth, provider)
+        .then((userCredential) => {
+            showMessage('usuário logado com sucesso', 'signInMessage'); 
+            const user = userCredential.user; 
+
+            localStorage.setItem('loggedInUserId', user.uid);
+
+            window.location.href = 'homepage.html';
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            if (errorCode === "auth/invalid-credential") {
+                showMessage("Email ou Senha incorreta", "signInMessage");
+            } else {
+                showMessage("Essa conta não existe", "signInMessage");
             }
         });
 });
